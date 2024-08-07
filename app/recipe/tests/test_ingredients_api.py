@@ -8,8 +8,10 @@ from recipe.serializers import IngredientSerializer
 
 INGREDIENT_URL = reverse('recipe:ingredient-list')
 
+
 def detail_url(ingredient_id):
     return reverse('recipe:ingredient-detail', args=[ingredient_id])
+
 
 def create_user(email='user@example.com', password='pass123'):
     return get_user_model().objects.create_user(email, password)
@@ -18,11 +20,11 @@ def create_user(email='user@example.com', password='pass123'):
 class PublicIngresientsAPITests(TestCase):
     def setUp(self):
         self.client = APIClient()
-    
+
     def test_auth_required(self):
         res = self.client.get(INGREDIENT_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-    
+
 
 class PrivateInredientsAPITests(TestCase):
     def setUp(self):
@@ -44,21 +46,21 @@ class PrivateInredientsAPITests(TestCase):
         user2 = create_user(email='user2@example.com')
         Ingredient.objects.create(user=user2, name='salt')
         ingredient = Ingredient.objects.create(user=self.user, name='pepper')
-        res=self.client.get(INGREDIENT_URL)
+        res = self.client.get(INGREDIENT_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['name'],ingredient.name)
-        self.assertEqual(res.data[0]['id'],ingredient.id)
-    
+        self.assertEqual(res.data[0]['name'], ingredient.name)
+        self.assertEqual(res.data[0]['id'], ingredient.id)
+
     def test_update_ingredient(self):
         ingredient = Ingredient.objects.create(user=self.user, name='sugar')
-        payload ={'name': 'milk'}
+        payload = {'name': 'milk'}
         url = detail_url(ingredient.id)
         res = self.client.patch(url, payload)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         ingredient.refresh_from_db()
         self.assertEqual(ingredient.name, payload['name'])
-    
+
     def test_delete_ingredient(self):
         ingredient = Ingredient.objects.create(user=self.user, name='water')
         url = detail_url(ingredient.id)

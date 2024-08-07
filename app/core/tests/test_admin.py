@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+
 class AdminSiteTests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -15,6 +16,7 @@ class AdminSiteTests(TestCase):
             password='testpass123',
             name='Test User',
         )
+
     def test_users_list(self):
         url = reverse('admin:core_user_changelist')
         res = self.client.get(url)
@@ -32,4 +34,3 @@ class AdminSiteTests(TestCase):
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, 200)
-        

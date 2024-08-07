@@ -16,7 +16,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
-    
 
     def create_superuser(self, email, password):
         user = self.create_user(email, password)
@@ -25,6 +24,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
@@ -36,6 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+
 class Recipe(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -46,9 +47,10 @@ class Recipe(models.Model):
     link = models.CharField(max_length=255, blank=True)
     tags = models.ManyToManyField('Tag')
     ingredients = models.ManyToManyField('Ingredient')
-    
-    def __str__(self) :
+
+    def __str__(self):
         return self.title
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=255)
@@ -56,8 +58,10 @@ class Tag(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
+
     def __str__(self) -> str:
         return self.name
+
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=255)
