@@ -16,11 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install Docker Compose
-        run: |
+        run:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.28.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose  
       - name: Test
-        run: docker-compose run --rm app sh - c "python manage.py wait_db && python manage.py test"
+        run: docker-compose run --rm app sh -c "python manage.py wait_db && python manage.py test"
       # - name: Lint
       #   run: docker-compose run --rm app sh -c "flake8"
