@@ -3,8 +3,9 @@ from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
-from core.models import Tag
+from core.models import Tag, Recipe
 from recipe.serializers import TagSerializer
+from decimal import Decimal
 
 TAGS_URL = reverse('recipe:tag-list')
 
@@ -64,3 +65,40 @@ class PrivateTagsAPITests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         tags = Tag.objects.filter(user=self.user)
         self.assertFalse(tags.exists())
+
+    def test_filter_tags(self):
+        t1 = Tag.objects.create(user=self.user, name='Tag1')
+        t2 = Tag.objects.create(user=self.user, name='Tag2')
+        recipe = Recipe.objects.create(
+            title='Title',
+            time_minutes=5,
+            price=Decimal('4.50'),
+            user=self.user,
+        )
+        recipe.tags.add(t1)
+        res = self.client.get(TAGS_URL, {'assigned_only': 1})
+        s1 = TagSerializer(t1)
+        s2 = TagSerializer(t2)
+        self.assertIn(s1.data, res.data)
+        self.assertNotIn(s2.data, res.data)
+    
+    def test_filter_unique(self):
+        t1 = Tag.objects.create(user=self.user, name='Tag1')
+        Tag.objects.create(user=self.user, name='Tag2')
+        recipe1 = Recipe.objects.create(
+            title='Title',
+            time_minutes=5,
+            price=Decimal('4.50'),
+            user=self.user,
+        )
+        recipe2 = Recipe.objects.create(
+            title='Title2',
+            time_minutes=5,
+            price=Decimal('4.50'),
+            user=self.user,
+        )
+        recipe1.tags.add(t1)
+        recipe2.tags.add(t1)
+        res = self.client.get(TAGS_URL, {'assigned_only': 1})
+        self.assertEqual(len(res.data), 1)
+        
