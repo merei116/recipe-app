@@ -101,7 +101,7 @@ class PrivateReсipeApi(TestCase):
           url = detail_url(recipe.id)
           res = self.client.patch(url, payload)
           self.assertEqual(res.status_code, status.HTTP_200_OK)
-          recipe.refresh_from_db
+          recipe.refresh_from_db()
           self.assertEqual(recipe.title, payload['title'])
           self.assertEqual(recipe.link, original_link)
           self.assertEqual(recipe.user, self.user)
